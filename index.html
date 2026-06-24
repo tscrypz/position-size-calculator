@@ -260,11 +260,11 @@
     <input type="number" id="risk-pct" value="1" min="0.1" max="10" step="0.25" oninput="syncRisk(this.value)" style="margin-top:8px" />
   </div>
   <div class="field">
-    <label>Stop Loss (points) <span id="sl-display">20 pts</span></label>
+    <label>Stop Loss (pips) <span id="sl-display">20 pips</span></label>
     <input type="number" id="sl" value="20" min="1" step="1" oninput="calc()" />
   </div>
   <div class="field">
-    <label>Take Profit (points) <span id="tp-display">40 pts</span></label>
+    <label>Take Profit (pips) <span id="tp-display">40 pips</span></label>
     <input type="number" id="tp" value="40" min="1" step="1" oninput="calc()" />
   </div>
 </div>
@@ -301,7 +301,7 @@
   </div>
 </div>
 
-<footer>contract size 1 · 1 pt = $1/lot · FTMO rules apply</footer>
+<footer>contract size 1 · 1 pip = $1/lot · FTMO rules apply</footer>
 
 <script>
   let instrument = 'spx';
@@ -352,8 +352,8 @@
 
     document.getElementById('bal-display').textContent = '$' + bal.toLocaleString();
     document.getElementById('risk-display').textContent = riskPct.toFixed(2) + '%';
-    document.getElementById('sl-display').textContent = sl + ' pts';
-    document.getElementById('tp-display').textContent = tp + ' pts';
+    document.getElementById('sl-display').textContent = sl + ' pips';
+    document.getElementById('tp-display').textContent = tp + ' pips';
   }
 
   function calc() {
