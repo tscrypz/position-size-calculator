@@ -263,10 +263,6 @@
     <label>Stop Loss (pips) <span id="sl-display">20 pips</span></label>
     <input type="number" id="sl" value="20" min="1" step="1" oninput="calc()" />
   </div>
-  <div class="field">
-    <label>Take Profit (pips) <span id="tp-display">40 pips</span></label>
-    <input type="number" id="tp" value="40" min="1" step="1" oninput="calc()" />
-  </div>
 </div>
 
 <div class="results">
@@ -291,14 +287,6 @@
     <span class="result-label">Max loss</span>
     <span class="result-value risk" id="max-loss">$1,000</span>
   </div>
-  <div class="result-row">
-    <span class="result-label">Target profit</span>
-    <span class="result-value profit" id="target-profit">$2,000</span>
-  </div>
-  <div class="result-row">
-    <span class="result-label">R:R</span>
-    <span class="result-value" id="rr">1 : 2.00</span>
-  </div>
 </div>
 
 <footer>contract size 1 · 1 pip = $1/lot · FTMO rules apply</footer>
@@ -313,7 +301,6 @@
     const lotsEl = document.getElementById('lots');
     const bar = document.getElementById('risk-bar');
     const slInput = document.getElementById('sl');
-    const tpInput = document.getElementById('tp');
 
     if (inst === 'spx') {
       btnSpx.className = 'toggle-btn active-spx';
@@ -323,7 +310,6 @@
       document.querySelectorAll('input[type="range"]').forEach(r => r.className = '');
       // typical SPX SL
       slInput.value = 20;
-      tpInput.value = 40;
     } else {
       btnSpx.className = 'toggle-btn';
       btnNdx.className = 'toggle-btn active-ndx';
@@ -332,7 +318,6 @@
       document.querySelectorAll('input[type="range"]').forEach(r => r.className = 'ndx');
       // typical NQ SL
       slInput.value = 50;
-      tpInput.value = 100;
     }
     updateDisplays();
     calc();
@@ -348,12 +333,10 @@
     const bal = parseFloat(document.getElementById('balance').value) || 0;
     const riskPct = parseFloat(document.getElementById('risk-pct').value) || 0;
     const sl = parseFloat(document.getElementById('sl').value) || 0;
-    const tp = parseFloat(document.getElementById('tp').value) || 0;
 
     document.getElementById('bal-display').textContent = '$' + bal.toLocaleString();
     document.getElementById('risk-display').textContent = riskPct.toFixed(2) + '%';
     document.getElementById('sl-display').textContent = sl + ' pips';
-    document.getElementById('tp-display').textContent = tp + ' pips';
   }
 
   function calc() {
@@ -362,20 +345,15 @@
     const bal = parseFloat(document.getElementById('balance').value) || 0;
     const riskPct = parseFloat(document.getElementById('risk-pct').value) || 0;
     const sl = parseFloat(document.getElementById('sl').value) || 1;
-    const tp = parseFloat(document.getElementById('tp').value) || 1;
 
     // contract size = 1, point value = $1/lot
     const riskUSD = bal * (riskPct / 100);
     const lots = riskUSD / sl;
     const maxLoss = lots * sl;
-    const targetProfit = lots * tp;
-    const rr = tp / sl;
 
     document.getElementById('lots').textContent = lots.toFixed(2);
     document.getElementById('risk-usd').textContent = '$' + riskUSD.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
     document.getElementById('max-loss').textContent = '$' + maxLoss.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-    document.getElementById('target-profit').textContent = '$' + targetProfit.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-    document.getElementById('rr').textContent = '1 : ' + rr.toFixed(2);
 
     // risk bar — max visual at 5%
     const barWidth = Math.min((riskPct / 5) * 100, 100);
