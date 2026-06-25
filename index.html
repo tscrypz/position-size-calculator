@@ -241,11 +241,11 @@
 <body>
 
 <header>
-  <div class="label-tag">FTMO Demo · MT5</div>
+  <div class="label-tag">FTMO Demo · Futures</div>
   <h1>Position Size Calculator</h1>
   <div class="instrument-toggle">
-    <button class="toggle-btn active-spx" id="btn-spx" onclick="setInstrument('spx')">US500.cash</button>
-    <button class="toggle-btn" id="btn-ndx" onclick="setInstrument('ndx')">US100.cash</button>
+    <button class="toggle-btn active-spx" id="btn-spx" onclick="setInstrument('spx')">ES1!</button>
+    <button class="toggle-btn" id="btn-ndx" onclick="setInstrument('ndx')">NQ1!</button>
   </div>
 </header>
 
@@ -260,8 +260,8 @@
     <input type="number" id="risk-pct" value="1" min="0.1" max="10" step="0.25" oninput="syncRisk(this.value)" style="margin-top:8px" />
   </div>
   <div class="field">
-    <label>Stop Loss (pips) <span id="sl-display">20 pips</span></label>
-    <input type="number" id="sl" value="20" min="1" step="1" oninput="calc()" />
+    <label>Stop Loss (points) <span id="sl-display">10 pts</span></label>
+    <input type="number" id="sl" value="10" min="0.25" step="0.25" oninput="calc()" />
   </div>
 </div>
 
@@ -276,8 +276,8 @@
     </div>
   </div>
   <div class="result-row">
-    <span class="result-label">Lots</span>
-    <span class="result-value highlight-spx" id="lots">5.00</span>
+    <span class="result-label">Contracts</span>
+    <span class="result-value highlight-spx" id="lots">5</span>
   </div>
   <div class="result-row">
     <span class="result-label">Risk $</span>
@@ -289,10 +289,11 @@
   </div>
 </div>
 
-<footer>contract size 1 · 1 pip = $1/lot · FTMO rules apply</footer>
+<footer>ES $50/pt · NQ $20/pt · whole contracts only · FTMO rules apply</footer>
 
 <script>
   let instrument = 'spx';
+  const POINT_VALUE = { spx: 50, ndx: 20 }; // ES $50/pt, NQ $20/pt
 
   function setInstrument(inst) {
     instrument = inst;
@@ -308,8 +309,8 @@
       lotsEl.className = 'result-value highlight-spx';
       bar.className = 'risk-bar-fill';
       document.querySelectorAll('input[type="range"]').forEach(r => r.className = '');
-      // typical SPX SL
-      slInput.value = 20;
+      // typical ES SL
+      slInput.value = 10;
     } else {
       btnSpx.className = 'toggle-btn';
       btnNdx.className = 'toggle-btn active-ndx';
@@ -317,7 +318,7 @@
       bar.className = 'risk-bar-fill ndx';
       document.querySelectorAll('input[type="range"]').forEach(r => r.className = 'ndx');
       // typical NQ SL
-      slInput.value = 50;
+      slInput.value = 20;
     }
     updateDisplays();
     calc();
@@ -336,7 +337,7 @@
 
     document.getElementById('bal-display').textContent = '$' + bal.toLocaleString();
     document.getElementById('risk-display').textContent = riskPct.toFixed(2) + '%';
-    document.getElementById('sl-display').textContent = sl + ' pips';
+    document.getElementById('sl-display').textContent = sl + ' pts';
   }
 
   function calc() {
@@ -345,13 +346,13 @@
     const bal = parseFloat(document.getElementById('balance').value) || 0;
     const riskPct = parseFloat(document.getElementById('risk-pct').value) || 0;
     const sl = parseFloat(document.getElementById('sl').value) || 1;
+    const pointValue = POINT_VALUE[instrument];
 
-    // contract size = 1, point value = $1/lot
     const riskUSD = bal * (riskPct / 100);
-    const lots = riskUSD / sl;
-    const maxLoss = lots * sl;
+    const contracts = Math.floor(riskUSD / (sl * pointValue));
+    const maxLoss = contracts * sl * pointValue;
 
-    document.getElementById('lots').textContent = lots.toFixed(2);
+    document.getElementById('lots').textContent = contracts;
     document.getElementById('risk-usd').textContent = '$' + riskUSD.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
     document.getElementById('max-loss').textContent = '$' + maxLoss.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
 
